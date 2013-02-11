@@ -1,0 +1,3 @@
+#! /bin/sh
+
+GOPATH=$GOPATH:/home/andrew/projects/golang-experiments go run src/blur.go
