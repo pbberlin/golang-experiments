@@ -1,13 +1,12 @@
 package main
 
 import (
-	"os"
 	"image"
-	"image/png"
-	"imageProcessing"
+	processing "imageProcessing"
+	"os"
 )
 
-func getInputImage(filename string) *image.RGBA {
+func getInputImage(filename string) processing.Image {
 	inputFile, err := os.Open(filename)
 	if err != nil {
 		panic(err)
@@ -19,24 +18,24 @@ func getInputImage(filename string) *image.RGBA {
 		panic(err)
 	}
 
-	return picture.(*image.RGBA)
+	return processing.NewImage(picture.(*image.RGBA))
 }
 
-func getOutputImage(blurRadius int, size image.Point) *image.RGBA {
+fu getOutputImag(blurRadius int, size image.Point) processing.Image {
 	topX, topY := blurRadius, blurRadius
 	bottomX, bottomY := size.X-blurRadius, size.Y-blurRadius
 
-	return image.NewRGBA(image.Rect(topX, topY, bottomX, bottomY))
+	return processing.NewImage(image.NewRGBA(image.Rect(topX, topY, bottomX, bottomY)))
 }
 
-func writeProcessedPicture(picture image.Image, filename string) {
+func writeProcessedPicture(picture processing.Image, filename string) {
 	outputFile, err := os.Create(filename)
 	if err != nil {
 		panic(err)
 	}
 	defer outputFile.Close()
 
-	png.Encode(outputFile, picture)
+	picture.EncodePng(outputFile)
 }
 
 func main() {
@@ -45,8 +44,8 @@ func main() {
 	pictureSize := picture.Bounds().Size()
 	processedPicture := getOutputImage(blurRadius, pictureSize)
 
-	imageProcessing.EachBlock(blurRadius, picture, func(x, y int, block *image.RGBA) {
-		processedPicture.Set(x, y, imageProcessing.AverageColor(block))
+	picture.EachBlock(blurRadius, picture, func(x, y int, block processing.Image) {
+		processedPicture.Set(x, y, block.AverageColor())
 	})
 
 	writeProcessedPicture(processedPicture, "lenna_processed.png")
