@@ -21,7 +21,7 @@ func getInputImage(filename string) processing.Image {
 	return processing.NewImage(picture.(*image.RGBA))
 }
 
-fu getOutputImag(blurRadius int, size image.Point) processing.Image {
+func getOutputImage(blurRadius int, size image.Point) processing.Image {
 	topX, topY := blurRadius, blurRadius
 	bottomX, bottomY := size.X-blurRadius, size.Y-blurRadius
 
